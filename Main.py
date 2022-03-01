@@ -7,7 +7,6 @@
 #Hamilton’s Quaternions
 
 
-
 from Objects import Cube
 import pygame
 import pygame
@@ -16,8 +15,6 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import Rotations
  
-
-
 
 
 pygame.init()

@@ -11,35 +11,34 @@ import matplotlib.pyplot as plt
 
 class Rotation:
     def __init__(self,yaw, pitch, roll ):
-        self.yaw = yaw # Rotation along the X axis 
-        self.pitch = pitch # Rotation along the Y axis
-        self.roll = roll # Rotation along the Z axis
-
+        self.yaw = yaw*(np.pi/180) # Rotation along the X axis 
+        self.pitch = pitch*(np.pi/180) # Rotation along the Y axis
+        self.roll = roll*(np.pi/180) # Rotation along the Z axis
+        print("yaw : ",self.yaw)
+        print("pitch: ", self.pitch)
+        print("roll: ", self.roll) 
 class Euler_Angles(Rotation):
     def __init__(self,yaw,pitch,roll):
         super().__init__(yaw,pitch,roll)
         self.initial_frame = (1,1,1)
-    def Rotation_X(self):
-        pass
+    # def Rotation_X(self):
+    #     pass
 
 
 class Quaternion(Rotation) :
     def __init__ (self,yaw,pitch,roll,Rotation_matrix = None):
-        super().init(yaw,pitch,roll)
         if Rotation_matrix: 
             self.phi,self.theta,self.psi = Rotation_matrix
+        else: 
+            super().__init__(yaw, pitch,roll)
+            self.phi,self.theta, self.psi = self.yaw,self.pitch,self.roll
+        
     def rotate(self,q1, v1):
         q2 = (0.0,) + v1
         
         print(q2)
         return self.multiply(self.multiply(q1, q2), self.conjugate(q1))[1:]
 
-
-    def rotate2(self,q1, v1):
-        q2 = (0.0,) + v1
-        # print("Q2 : ")
-        print(q2)
-        return self.multiply(self.multiply(q2, q1), self.conjugate(q2))[1:]
 
     def conjugate(self,quarterion):
         #quarterrions = w,x,y,z and their conjugates are w,-x,-y,-z
@@ -84,12 +83,12 @@ q = Quaternion.euler_to_quaternion(phi, theta, psi)
 
 print(q)
 
-test = Quaternion()
+test = Quaternion(0,0,0)
 #rotation based on
 v2 = test.rotate(q,v1)
 
 
-v3 = test.rotate2(q,v1)
+# v3 = test.rotate2(q,v1)
 print(np.round(v2, decimals=2))
 # print(np.round(v3, decimals=2))
 
@@ -105,7 +104,7 @@ ax.quiver(0, 0, -1, 0, 0, 3, color='#aaaaaa',linestyle='dashed')
 ax.quiver(0, 0, 0, v1[0], v1[1], v1[2], color='b')
 # Vector after rotation
 ax.quiver(0, 0, 0, v2[0], v2[1], v2[2], color='r')
-ax.quiver(0, 0, 0, v3[0], v3[1], v3[2], color='g')
+# ax.quiver(0, 0, 0, v3[0], v3[1], v3[2], color='g')
 ax.set_xlim([-1.5, 1.5])
 ax.set_ylim([-1.5, 1.5])
 ax.set_zlim([-1.5, 1.5])
