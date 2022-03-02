@@ -1,5 +1,5 @@
 ## Author          : Jolo Tolentino
-## Project Name    : Quaternion Understanding through PyGame
+## Project Name    : Quaternion Understanding through PyGame and Matplotlib
 ## Project Started : February 25,2022
 
 ### I investigate the difference between the use of Euler Angles and Quaternions
@@ -23,24 +23,28 @@ class Euler_Angles(Rotation):
         super().__init__(yaw,pitch,roll)
         self.initial_frame = (1,1,1)
     
+
+    ### Established rotations
+    ## the columns represent the rotation 
+    
     def Rotation_X(yaw):
-        return np.matrix([[ 1, 0           , 0           ],
+        return np.matrix([[ 1, 0           , 0       ],
                           [ 0, m.cos(yaw),-m.sin(yaw)],
                           [ 0, m.sin(yaw), m.cos(yaw)]])
             
     def Rotation_Y(pitch):
         return np.matrix([[ m.cos(pitch), 0, m.sin(pitch)],
-                   [ 0           , 1, 0           ],
-                   [-m.sin(pitch), 0, m.cos(pitch)]])
+                          [ 0           , 1, 0           ],
+                          [-m.sin(pitch), 0, m.cos(pitch)]])
   
 
     def Rotation_Z(roll): 
         return np.matrix([[ m.cos(roll), -m.sin(roll), 0 ],
-                   [ m.sin(roll), m.cos(roll) , 0 ],
-                   [ 0           , 0            , 1 ]])
+                          [ m.sin(roll), m.cos(roll) , 0 ],
+                          [ 0         , 0            , 1 ]])
 
 
-    def Cardan_Angles(matrix):
+    def Cardan_Angles(matrix): #rotation about 3 Axis (X,Y,Z)
         tol = sys.float_info.epsilon * 10
         
         if abs(matrix.item(0,0))< tol and abs(matrix.item(1,0)) < tol:
@@ -57,6 +61,15 @@ class Euler_Angles(Rotation):
         
         return eul1,eul2,eul3
 
+
+
+
+
+## Enter the Unknown 
+'Quaternions can represent 3D rotation, and is arguably the better option over Euler Angles'
+'Due to human nature, we always opt for the easier solution if it would suffice'
+'But for our application we need to delve deeper into the 3D spatial mathematics to generate stability'
+
 class Quaternion(Rotation) :
     def __init__ (self,yaw,pitch,roll,Rotation_matrix = None):
         if Rotation_matrix: 
@@ -67,8 +80,6 @@ class Quaternion(Rotation) :
         
     def Rotate(self,q1, v1):
         q2 = (0.0,) + v1
-        
-        print(q2)
         return self.multiply(self.multiply(q1, q2), self.conjugate(q1))[1:]
 
 
