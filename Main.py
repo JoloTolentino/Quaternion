@@ -7,7 +7,7 @@
 #Hamilton’s Quaternions
 
 
-from numpy import angle
+# from numpy import angle
 from Objects import Cube
 import pygame
 import pygame
@@ -16,7 +16,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from Rotations import Euler_Angles, Quaternion
  
-
+###
 ### basic py game to simulate Euler Angle rotation and quaternion
 pygame.init()
 display = (800,600)
@@ -24,7 +24,7 @@ pygame.display.set_mode(display,DOUBLEBUF|OPENGL)
 gluPerspective(45,(display[0]/display[1]),0.1,50.0) #
 Object = Cube()
 glTranslatef(0.0,0.0,-5)
-print(glRotate)
+
 # glRotatef(0,0,0,0)
 print(type(glRotatef(0,0,0,0)))
 

@@ -1,15 +1,13 @@
 ## Author          : Jolo Tolentino
-## Project Name    : Quaternion Understanding through PyGame
+## Project Name    : Quaternion Understanding through PyGame and Matplotlib
 ## Project Started : February 25,2022
 
 ### I investigate the difference between the use of Euler Angles and Quaternions
 
 #Hamilton’s Quaternions
+ 
 
 
-import numpy as np 
-import Rotations
-import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *

@@ -8,6 +8,7 @@
 import numpy as np 
 import math as m
 import matplotlib.pyplot as plt 
+import sys
 
 class Rotation:
     def __init__(self,yaw, pitch, roll ):
@@ -39,7 +40,22 @@ class Euler_Angles(Rotation):
                    [ 0           , 0            , 1 ]])
 
 
+    def Cardan_Angles(matrix):
+        tol = sys.float_info.epsilon * 10
+        
+        if abs(matrix.item(0,0))< tol and abs(matrix.item(1,0)) < tol:
+            eul1 = 0
+            eul2 = m.atan2(-matrix.item(2,0), matrix.item(0,0))
+            eul3 = m.atan2(-matrix.item(1,2), matrix.item(1,1))
 
+        else:   
+            eul1 = m.atan2(matrix.item(1,0),matrix.item(0,0))
+            sp = m.sin(eul1)
+            cp = m.cos(eul1)
+            eul2 = m.atan2(-matrix.item(2,0),cp*matrix.item(0,0)+sp*matrix.item(1,0))
+            eul3 = m.atan2(sp*matrix.item(0,2)-cp*matrix.item(1,2),cp*matrix.item(1,1)-sp*matrix.item(0,1))
+        
+        return eul1,eul2,eul3
 
 class Quaternion(Rotation) :
     def __init__ (self,yaw,pitch,roll,Rotation_matrix = None):
@@ -49,18 +65,18 @@ class Quaternion(Rotation) :
             super().__init__(yaw, pitch,roll)
             self.phi,self.theta, self.psi = self.yaw,self.pitch,self.roll
         
-    def rotate(self,q1, v1):
+    def Rotate(self,q1, v1):
         q2 = (0.0,) + v1
         
         print(q2)
         return self.multiply(self.multiply(q1, q2), self.conjugate(q1))[1:]
 
 
-    def conjugate(self,quarterion):
+    def Conjugate(self,quarterion):
         #quarterrions = w,x,y,z and their conjugates are w,-x,-y,-z
         return (quarterion[0],-quarterion[1],-quarterion[2],-quarterion[3])
 
-    def multiply(self,quarterion1,quarterion2):
+    def Multiply(self,quarterion1,quarterion2):
         w1, x1, y1, z1 = quarterion1
         w2, x2, y2, z2 = quarterion2
         w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
@@ -69,7 +85,7 @@ class Quaternion(Rotation) :
         z = w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2
         return w, x, y, z
 
-    def euler_to_quaternion(phi, theta, psi):
+    def Euler_to_Quaternion(phi, theta, psi):
  
         qw = np.cos(phi/2) * np.cos(theta/2) * np.cos(psi/2) + np.sin(phi/2) * np.sin(theta/2) * np.sin(psi/2)
         qx = np.sin(phi/2) * np.cos(theta/2) * np.cos(psi/2) - np.cos(phi/2) * np.sin(theta/2) * np.sin(psi/2)
@@ -78,7 +94,7 @@ class Quaternion(Rotation) :
  
         return [qw, qx, qy, qz]
 
-    def quaternion_to_euler(q0, q1, q2, q3):
+    def Quaternion_to_Euler(q0, q1, q2, q3):
      
         X = m.atan2((2*(q0*q1+q2*q3)), (1-2*(q1*q1+q2*q2)))
         Y = m.asin(1 if 2 * (q0 * q2 - q3 * q1) > 1 else (-1 if 2 * (q0 * q2 - q3 * q1)<-1 else 2 * (q0 * q2 - q3 * q1)))
