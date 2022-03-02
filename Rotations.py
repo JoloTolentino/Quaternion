@@ -5,53 +5,56 @@
 ### I investigate the difference between the use of Euler Angles and Quaternions
 
 #Hamilton’s Quaternions
+
 import numpy as np 
 import math as m
 import matplotlib.pyplot as plt 
 import sys
 
-class Rotation:
-    def __init__(self,yaw, pitch, roll ):
-        self.yaw = yaw*(np.pi/180) # Rotation along the X axis 
-        self.pitch = pitch*(np.pi/180) # Rotation along the Y axis
-        self.roll = roll*(np.pi/180) # Rotation along the Z axis
+class Vector_Rotation:
+    def __init__(self,vector,yaw = None, pitch= None, roll = None):
+        self.yaw = yaw*(np.pi/180) # Vector_Rotation along the X axis 
+        self.pitch = pitch*(np.pi/180) # Vector_Rotation along the Y axis
+        self.roll = roll*(np.pi/180) # Vector_Rotation along the Z axis
+        self.vector = vector
 
+class Euler_Angles(Vector_Rotation):
 
-class Euler_Angles(Rotation):
     
-    def __init__(self,yaw,pitch,roll):
-        super().__init__(yaw,pitch,roll)
-        self.initial_frame = (1,1,1)
+    def __init__(self,yaw,pitch,roll,vector):
+        super().__init__(yaw,pitch,roll,vector)
+        self.initial_frame = self.vector
     
 
-    ### Established rotations
-    ## the columns represent the rotation 
+    ### Established Vector_Rotations
+    ## the columns represent the Vector_Rotation 
     
-    def Rotation_X(yaw):
+    def Vector_Rotation_X(yaw):
         return np.matrix([[ 1, 0           , 0       ],
                           [ 0, m.cos(yaw),-m.sin(yaw)],
                           [ 0, m.sin(yaw), m.cos(yaw)]])
             
-    def Rotation_Y(pitch):
+    def Vector_Rotation_Y(pitch):
         return np.matrix([[ m.cos(pitch), 0, m.sin(pitch)],
                           [ 0           , 1, 0           ],
                           [-m.sin(pitch), 0, m.cos(pitch)]])
   
 
-    def Rotation_Z(roll): 
+    def Vector_Rotation_Z(roll): 
         return np.matrix([[ m.cos(roll), -m.sin(roll), 0 ],
                           [ m.sin(roll), m.cos(roll) , 0 ],
                           [ 0         , 0            , 1 ]])
 
 
-    def Cardan_Angles(matrix): #rotation about 3 Axis (X,Y,Z)
+    def Cardan_Angles(matrix): #Vector_Rotation about 3 Axis (X,Y,Z) TATE -BRYAN angles 
         tol = sys.float_info.epsilon * 10
-        
+        #try this first
         if abs(matrix.item(0,0))< tol and abs(matrix.item(1,0)) < tol:
             eul1 = 0
             eul2 = m.atan2(-matrix.item(2,0), matrix.item(0,0))
             eul3 = m.atan2(-matrix.item(1,2), matrix.item(1,1))
 
+        #then this 
         else:   
             eul1 = m.atan2(matrix.item(1,0),matrix.item(0,0))
             sp = m.sin(eul1)
@@ -61,23 +64,38 @@ class Euler_Angles(Rotation):
         
         return eul1,eul2,eul3
 
-
-
+    def eueler(matrix): pass
 
 
 ## Enter the Unknown 
-'Quaternions can represent 3D rotation, and is arguably the better option over Euler Angles'
+'Quaternions can represent 3D Vector_Rotation, and is arguably the better option over Euler Angles'
 'Due to human nature, we always opt for the easier solution if it would suffice'
 'But for our application we need to delve deeper into the 3D spatial mathematics to generate stability'
 
-class Quaternion(Rotation) :
-    def __init__ (self,yaw,pitch,roll,Rotation_matrix = None):
-        if Rotation_matrix: 
-            self.phi,self.theta,self.psi = Rotation_matrix
+class Quaternion(Vector_Rotation) :
+    def __init__ (self,yaw,pitch,roll,Vector_Rotation_matrix = None):
+        if Vector_Rotation_matrix: 
+            self.phi,self.theta,self.psi = RMat2Quat(Vector_Rotation_matrix)
         else: 
             super().__init__(yaw, pitch,roll)
             self.phi,self.theta, self.psi = self.yaw,self.pitch,self.roll
+    
+    # https://www.euclideanspace.com/maths/geometry/Vector_Rotations/conversions/matrixToQuaternion/index.htm
+    def RMat2Quat(Vector_Rotation_Matrix):
+        trace = Vector_Rotation_Matrix[0][0]+ Vector_Rotation_Matrix[1][1]+ Vector_Rotation_Matrix[2][2]
+        if trace>0:
+            S = np.sqrt(trace+1.0) *2
+            w = 0.25*S 
+            x = Vector_Rotation_Matrix[2][1] - Vector_Rotation_Matrix[1][2] /S
+            y = Vector_Rotation_Matrix[0][2] - Vector_Rotation_Matrix[2][0] /S
+            z = Vector_Rotation_Matrix[1][0] - Vector_Rotation_Matrix[0][1] /S
         
+        elif Vector_Rotation_Matrix[] 
+        # self.w,self.x,self.y,self.z = np.sqrt() 
+
+
+
+    #q1 = Vector_Rotation description  v1 = inital position in 3D space 
     def Rotate(self,q1, v1):
         q2 = (0.0,) + v1
         return self.multiply(self.multiply(q1, q2), self.conjugate(q1))[1:]
@@ -87,6 +105,8 @@ class Quaternion(Rotation) :
         #quarterrions = w,x,y,z and their conjugates are w,-x,-y,-z
         return (quarterion[0],-quarterion[1],-quarterion[2],-quarterion[3])
 
+
+    # cross product and dot products     
     def Multiply(self,quarterion1,quarterion2):
         w1, x1, y1, z1 = quarterion1
         w2, x2, y2, z2 = quarterion2
@@ -127,7 +147,7 @@ class Quaternion(Rotation) :
 # print(q)
 
 # test = Quaternion(0,0,0)
-# #rotation based on
+# #Vector_Rotation based on
 # v2 = test.rotate(q,v1)
 
 
@@ -143,9 +163,9 @@ class Quaternion(Rotation) :
 # ax.quiver(-1, 0, 0, 3, 0, 0, color='#aaaaaa',linestyle='dashed')
 # ax.quiver(0, -1, 0, 0,3, 0, color='#aaaaaa',linestyle='dashed')
 # ax.quiver(0, 0, -1, 0, 0, 3, color='#aaaaaa',linestyle='dashed')
-# # Vector before rotation
+# # Vector before Vector_Rotation
 # ax.quiver(0, 0, 0, v1[0], v1[1], v1[2], color='b')
-# # Vector after rotation
+# # Vector after Vector_Rotation
 # ax.quiver(0, 0, 0, v2[0], v2[1], v2[2], color='r')
 # # ax.quiver(0, 0, 0, v3[0], v3[1], v3[2], color='g')
 # ax.set_xlim([-1.5, 1.5])

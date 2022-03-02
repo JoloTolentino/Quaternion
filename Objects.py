@@ -12,10 +12,14 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-
+'To understand more about rotation I decided to creaete a Cube object to visualize the rotations'
 
 
 class Cube: 
+
+    "In 3D coordinate space, to draw a cube there are 8 vertexes ( yes those pointy edges)"
+    "hence the 8 edges i predefined below."
+
     def __init__ (self):
         self.vertices  =  [(1,-1,-1),
                             (1,1,-1),
@@ -25,6 +29,9 @@ class Cube:
                              (1,1,1),
                            (-1,-1,1),
                             (-1,1,1)]
+
+        "In 3D coordinate space, to draw a cube there are 8 vertexes ( yes those pointy edges)"
+        "hence the 8 edges i predefined below."
 
         self.edges  = [(0,1),
                        (0,3),

@@ -1,13 +1,10 @@
 ## Author          : Jolo Tolentino
-## Project Name    : Quaternion Understanding through PyGame
+## Project Name    : Quaternion Understanding through PyGame and Matplotlib
 ## Project Started : February 25,2022
 
 ### I investigate the difference between the use of Euler Angles and Quaternions
 
-#Hamilton’s Quaternions
 
-
-# from numpy import angle
 from Objects import Cube
 import pygame
 import pygame
@@ -28,7 +25,7 @@ glTranslatef(0.0,0.0,-5)
 # glRotatef(0,0,0,0)
 print(type(glRotatef(0,0,0,0)))
 
-Desired_Angle = 45
+Desired_Angle = 180
 angle= 0 
 pygame.time.delay(40)
 while angle!= Desired_Angle:
@@ -38,7 +35,7 @@ while angle!= Desired_Angle:
             quit()
     
 
-    glRotatef(1, 0, 1, 1) # rotate using euler angles
+    glRotatef(1, 0, 0, 1) # rotate using euler angles
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT) # refresh
     
     Object.create()
