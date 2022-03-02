@@ -14,15 +14,31 @@ class Rotation:
         self.yaw = yaw*(np.pi/180) # Rotation along the X axis 
         self.pitch = pitch*(np.pi/180) # Rotation along the Y axis
         self.roll = roll*(np.pi/180) # Rotation along the Z axis
-        print("yaw : ",self.yaw)
-        print("pitch: ", self.pitch)
-        print("roll: ", self.roll) 
+
+
 class Euler_Angles(Rotation):
+    
     def __init__(self,yaw,pitch,roll):
         super().__init__(yaw,pitch,roll)
         self.initial_frame = (1,1,1)
-    # def Rotation_X(self):
-    #     pass
+    
+    def Rotation_X(yaw):
+        return np.matrix([[ 1, 0           , 0           ],
+                          [ 0, m.cos(yaw),-m.sin(yaw)],
+                          [ 0, m.sin(yaw), m.cos(yaw)]])
+            
+    def Rotation_Y(pitch):
+        return np.matrix([[ m.cos(pitch), 0, m.sin(pitch)],
+                   [ 0           , 1, 0           ],
+                   [-m.sin(pitch), 0, m.cos(pitch)]])
+  
+
+    def Rotation_Z(roll): 
+        return np.matrix([[ m.cos(roll), -m.sin(roll), 0 ],
+                   [ m.sin(roll), m.cos(roll) , 0 ],
+                   [ 0           , 0            , 1 ]])
+
+
 
 
 class Quaternion(Rotation) :
@@ -74,38 +90,38 @@ class Quaternion(Rotation) :
 
 
 	
-v1 = (1,0,0)
+# v1 = (1,0,0)
 
-phi = m.pi/2
-theta = m.pi/4
-psi = m.pi/2
-q = Quaternion.euler_to_quaternion(phi, theta, psi)
+# phi = m.pi/2
+# theta = m.pi/4
+# psi = m.pi/2
+# q = Quaternion.euler_to_quaternion(phi, theta, psi)
 
-print(q)
+# print(q)
 
-test = Quaternion(0,0,0)
-#rotation based on
-v2 = test.rotate(q,v1)
+# test = Quaternion(0,0,0)
+# #rotation based on
+# v2 = test.rotate(q,v1)
 
 
-# v3 = test.rotate2(q,v1)
-print(np.round(v2, decimals=2))
-# print(np.round(v3, decimals=2))
+# # v3 = test.rotate2(q,v1)
+# print(np.round(v2, decimals=2))
+# # print(np.round(v3, decimals=2))
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
   
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-# Cartesian axes
-ax.quiver(-1, 0, 0, 3, 0, 0, color='#aaaaaa',linestyle='dashed')
-ax.quiver(0, -1, 0, 0,3, 0, color='#aaaaaa',linestyle='dashed')
-ax.quiver(0, 0, -1, 0, 0, 3, color='#aaaaaa',linestyle='dashed')
-# Vector before rotation
-ax.quiver(0, 0, 0, v1[0], v1[1], v1[2], color='b')
-# Vector after rotation
-ax.quiver(0, 0, 0, v2[0], v2[1], v2[2], color='r')
-# ax.quiver(0, 0, 0, v3[0], v3[1], v3[2], color='g')
-ax.set_xlim([-1.5, 1.5])
-ax.set_ylim([-1.5, 1.5])
-ax.set_zlim([-1.5, 1.5])
-plt.show()
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# # Cartesian axes
+# ax.quiver(-1, 0, 0, 3, 0, 0, color='#aaaaaa',linestyle='dashed')
+# ax.quiver(0, -1, 0, 0,3, 0, color='#aaaaaa',linestyle='dashed')
+# ax.quiver(0, 0, -1, 0, 0, 3, color='#aaaaaa',linestyle='dashed')
+# # Vector before rotation
+# ax.quiver(0, 0, 0, v1[0], v1[1], v1[2], color='b')
+# # Vector after rotation
+# ax.quiver(0, 0, 0, v2[0], v2[1], v2[2], color='r')
+# # ax.quiver(0, 0, 0, v3[0], v3[1], v3[2], color='g')
+# ax.set_xlim([-1.5, 1.5])
+# ax.set_ylim([-1.5, 1.5])
+# ax.set_zlim([-1.5, 1.5])
+# plt.show()
