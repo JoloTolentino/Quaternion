@@ -17,7 +17,9 @@ class Vector_Rotation:
             self.yaw =   yaw*(np.pi/180)   # Vector_Rotation along the X axis 
             self.pitch = pitch*(np.pi/180) # Vector_Rotation along the Y axis
             self.roll =  roll*(np.pi/180)  # Vector_Rotation along the Z axis
-        self.vector = vector
+        
+        if vector: 
+            self.vector = vector
 
 'To understand how to rotate objects using computer graphics we need to understand the importance of Euler Angles/ Tate-Bryan Angles and Quaternions'
 
@@ -25,30 +27,41 @@ class Vector_Rotation:
 class Euler_Angles(Vector_Rotation):
 
     
-    def __init__(self,yaw,pitch,roll,vector):
-        super().__init__(yaw,pitch,roll,vector)
-        self.vector = self.vector
-    
+    def __init__(self,yaw=None,pitch=None,roll=None,vector=None):
+        super().__init__(vector,yaw,pitch,roll)
+        if yaw and pitch and roll: 
+            self.yaw, self.pitch, self.roll = self.angle2rad(yaw),self.angle2rad(pitch),self.angle2rad(roll)
+        if vector: 
+            self.vector = np.array(vector).reshape(3,1)
 
     ### Established Vector_Rotations
     ## the columns represent the Vector_Rotation 
     
+    def angle2rad(self,angle):
+        return angle*(np.pi/180)
+
+    def Vec_Rotate(self,vector,rotation,angle):
+        return  np.dot(rotation(angle),vector)
+
+
     def Rot_X(self,yaw):
-        return np.matmul(np.matrix([[ 1, 0           , 0       ],
-                                    [ 0, m.cos(yaw),-m.sin(yaw)],
-                                    [ 0, m.sin(yaw), m.cos(yaw)]]),self.vector)
+        yaw = self.angle2rad(yaw)
+        return np.matrix([[ 1, 0           , 0       ],
+                          [ 0, m.cos(yaw),-m.sin(yaw)],
+                          [ 0, m.sin(yaw), m.cos(yaw)]])
             
     def Rot_Y(self,pitch):
-        return np.matmul(np.matrix([[ m.cos(pitch), 0, m.sin(pitch)],
-                                    [ 0           , 1, 0           ],
-                                    [-m.sin(pitch), 0, m.cos(pitch)]]),self.vector)
+        pitch = self.angle2rad(pitch)
+        return np.matrix([[ m.cos(pitch), 0, m.sin(pitch)],
+                          [ 0           , 1, 0           ],
+                          [-m.sin(pitch), 0, m.cos(pitch)]])
             
 
     def Rot_Z(self,roll): 
-        return np.matmul(np.matrix([[ m.cos(roll), -m.sin(roll), 0 ],
-                                    [ m.sin(roll), m.cos(roll) , 0 ],
-                                    [ 0         , 0            , 1 ]]),self.vector)
-
+        roll = self.angle2rad(roll)
+        return np.matrix([[ m.cos(roll), -m.sin(roll), 0 ],
+                          [ m.sin(roll), m.cos(roll) , 0 ],
+                          [ 0         , 0            , 1 ]])
 
     def Tate_Bryan(matrix): #Vector_Rotation about 3 Axis (X,Y,Z) TATE -BRYAN angles 
         tol = sys.float_info.epsilon * 10
@@ -79,20 +92,24 @@ class Euler_Angles(Vector_Rotation):
 
 
 ## Enter the Unknown 
-'Quaternions can represent 3D Vector_Rotation, and is arguably the better option over Euler Angles'
+'Quaternions can represent 3D vector rotation, and is arguably the better option over Euler Angles'
 'Due to human nature, we always opt for the easier solution if it would suffice'
 'But for our application we need to delve deeper into the 3D spatial mathematics to generate stability'
+
+
 # resource taken from:
 # https://www.euclideanspace.com/maths/geometry/Vector_Rotations/conversions/matrixToQuaternion/index.htm
 
 class Quaternion(Vector_Rotation) :
     
-    def __init__ (self,vector,yaw,pitch,roll,Vector_Rotation_matrix = None):
+    def __init__ (self,vector = None,yaw = None,pitch = None,roll = None,Vector_Rotation_matrix = None):
         if Vector_Rotation_matrix: 
             self.q = self.RMat2Quat(Vector_Rotation_matrix)
         else: 
             super().__init__(vector, yaw, pitch,roll)
             # self.phi,self.theta, self.psi = self.yaw,self.pitch,self.roll
+
+        # assert(vector )
     
     def RMat2Quat(Vector_Rotation_Matrix):
         trace = Vector_Rotation_Matrix[0][0]+ Vector_Rotation_Matrix[1][1]+ Vector_Rotation_Matrix[2][2]
@@ -195,6 +212,22 @@ class Plot3D:
 
 
 v1 = (1,0,0)
+euler = Euler_Angles()
+Rotation_Matrix = euler.Rot_Z(90) * euler.Rot_Y(45) * euler.Rot_Z(90)
+
+print(np.round(Rotation_Matrix, decimals= 2))
+
+
+
+
+
+
+
+
+
+
+
+
 # test = Vector_Rotation(v1,30,20,10)
 
 
