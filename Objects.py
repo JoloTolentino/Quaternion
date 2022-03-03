@@ -21,14 +21,14 @@ class Cube:
     "hence the 8 edges i predefined below."
 
     def __init__ (self):
-        self.vertices  =  [(1,-1,-1),
-                            (1,1,-1),
-                           (-1,1,-1),
+        self.vertices  = [(1, -1,-1),
+                          (1,  1,-1),
+                          (-1, 1,-1),
                           (-1,-1,-1),
-                            (1,-1,1),
-                             (1,1,1),
-                           (-1,-1,1),
-                            (-1,1,1)]
+                          (1, -1, 1),
+                          (1,  1, 1),
+                          (-1,-1, 1),
+                          (-1, 1, 1)]
 
         "In 3D coordinate space, to draw a cube there are 8 vertexes ( yes those pointy edges)"
         "hence the 8 edges i predefined below."
