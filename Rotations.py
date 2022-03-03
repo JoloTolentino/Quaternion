@@ -63,7 +63,7 @@ class Euler_Angles(Vector_Rotation):
                           [ m.sin(roll), m.cos(roll) , 0 ],
                           [ 0         , 0            , 1 ]])
 
-    def Tate_Bryan(matrix): #Vector_Rotation about 3 Axis (X,Y,Z) TATE -BRYAN angles 
+    def Tate_Bryan(self,matrix): #Vector_Rotation about 3 Axis (X,Y,Z) TATE -BRYAN angles 
         tol = sys.float_info.epsilon * 10
         #try this first
         if abs(matrix.item(0,0))< tol and abs(matrix.item(1,0)) < tol:
@@ -79,16 +79,16 @@ class Euler_Angles(Vector_Rotation):
             theta = m.atan2(-matrix.item(2,0),cp*matrix.item(0,0)+sp*matrix.item(1,0))
             psi = m.atan2(sp*matrix.item(0,2)-cp*matrix.item(1,2),cp*matrix.item(1,1)-sp*matrix.item(0,1))
         
-        return phi,theta,psi
+        return np.round((phi*180)/np.pi,decimals=2),np.round((theta*180)/np.pi,decimals=2),np.round((psi*180)/np.pi,decimals=2)
 
-    def Eueler(matrix): # Rotation between 2 Principal Axises (X,Y,X) .... and all the other permutations 
+    def Eueler(self,matrix): # Rotation between 2 Principal Axises (X,Y,X) .... and all the other permutations 
         phi = m.atan2(matrix.item(1,2),matrix.item(0,2))
         sp = m.sin(phi)
         cp = m.cos(phi)
         theta = m.atan2(cp*matrix.item(0,2)+sp*matrix.item(1,2), matrix.item(2,2))
         psi = m.atan2(-sp*matrix.item(0,0)+cp*matrix.item(1,0),-sp*matrix.item(0,1)+cp*matrix.item(1,1))
 
-        return phi,theta,psi
+        return np.round((phi*180)/np.pi,decimals=2),np.round((theta*180)/np.pi,decimals=2),np.round((psi*180)/np.pi,decimals=2)
 
 
 ## Enter the Unknown 
@@ -103,48 +103,50 @@ class Euler_Angles(Vector_Rotation):
 class Quaternion(Vector_Rotation) :
     
     def __init__ (self,vector = None,yaw = None,pitch = None,roll = None,Vector_Rotation_matrix = None):
-        if Vector_Rotation_matrix: 
+        if type(Vector_Rotation_matrix) == np.matrix: 
             self.q = self.RMat2Quat(Vector_Rotation_matrix)
+            print(self.q)
         else: 
             super().__init__(vector, yaw, pitch,roll)
             # self.phi,self.theta, self.psi = self.yaw,self.pitch,self.roll
 
         # assert(vector )
     
-    def RMat2Quat(Vector_Rotation_Matrix):
-        trace = Vector_Rotation_Matrix[0][0]+ Vector_Rotation_Matrix[1][1]+ Vector_Rotation_Matrix[2][2]
+    def RMat2Quat(self,Vector_Rotation_Matrix):
+        # print(Vector_Rotation_Matrix[0][0])
+        trace = Vector_Rotation_Matrix.item(0,0)+ Vector_Rotation_Matrix.item(1,1)+ Vector_Rotation_Matrix.item(2,2)
         
         if trace>0:
-            S = np.sqrt(trace+1.0) *2
+            S = np.sqrt(trace+1.0)*2 
             w = 0.25*S 
-            x = (Vector_Rotation_Matrix[2][1] - Vector_Rotation_Matrix[1][2]) /S
-            y = (Vector_Rotation_Matrix[0][2] - Vector_Rotation_Matrix[2][0]) /S
-            z = (Vector_Rotation_Matrix[1][0] - Vector_Rotation_Matrix[0][1]) /S
+            x = (Vector_Rotation_Matrix.item(2,1) - Vector_Rotation_Matrix.item(1,2)) /S
+            y = (Vector_Rotation_Matrix.item(0,2) - Vector_Rotation_Matrix.item(2,0)) /S
+            z = (Vector_Rotation_Matrix.item(1,0) - Vector_Rotation_Matrix.item(0,1)) /S
         
             return w,x,y,z
-        elif (Vector_Rotation_Matrix[0][0] > Vector_Rotation_Matrix[1][1]) and (Vector_Rotation_Matrix[0][0]> Vector_Rotation_Matrix[2][2]):
-            S = np.sqrt(1 + Vector_Rotation_Matrix[0][0] - Vector_Rotation_Matrix[1][1]- Vector_Rotation_Matrix[2][2])*2
-            w = (Vector_Rotation_Matrix[2][1] - Vector_Rotation_Matrix[1][2]) /S
+        elif (Vector_Rotation_Matrix.item(0,0) > Vector_Rotation_Matrix.item(1,1) and (Vector_Rotation_Matrix.item(0,0)> Vector_Rotation_Matrix.item(2,2))):
+            S = 2*np.sqrt(1 + Vector_Rotation_Matrix.item(0,0) - Vector_Rotation_Matrix.item(1,1)- Vector_Rotation_Matrix(2,2))*2
+            w = (Vector_Rotation_Matrix.item(2,1) - Vector_Rotation_Matrix.item(1,2)) /S
             x = 0.25*S
-            y = (Vector_Rotation_Matrix[0][1] - Vector_Rotation_Matrix[1][0]) /S
-            z = (Vector_Rotation_Matrix[0][2] - Vector_Rotation_Matrix[2][0]) /S
+            y = (Vector_Rotation_Matrix.item(0,1) - Vector_Rotation_Matrix.item(1,0)) /S
+            z = (Vector_Rotation_Matrix.item(0,2) - Vector_Rotation_Matrix.item(2,0)) /S
 
             return w,x,y,z
 
-        elif Vector_Rotation_Matrix[1][1] > Vector_Rotation_Matrix[2][2]:
-            S = np.sqrt(1 + Vector_Rotation_Matrix[1][1] - Vector_Rotation_Matrix[0][0]- Vector_Rotation_Matrix[2][2])*2
-            w = (Vector_Rotation_Matrix[0][2] - Vector_Rotation_Matrix[2][0]) /S
-            x = (Vector_Rotation_Matrix[0][1] - Vector_Rotation_Matrix[1][0]) /S
+        elif Vector_Rotation_Matrix.item(1,1) > Vector_Rotation_Matrix.item(2,2):
+            S = 2*np.sqrt(1 + Vector_Rotation_Matrix[1][1] - Vector_Rotation_Matrix[0][0]- Vector_Rotation_Matrix[2][2])
+            w = (Vector_Rotation_Matrix.item(0,2) - Vector_Rotation_Matrix.item(2,0)) /S
+            x = (Vector_Rotation_Matrix.item(0,1) - Vector_Rotation_Matrix.item(1,0)) /S
             y = 0.25*S
-            z = (Vector_Rotation_Matrix[1][2] - Vector_Rotation_Matrix[2][1]) /S
+            z = (Vector_Rotation_Matrix.item(1,2) - Vector_Rotation_Matrix.item(2,1)) /S
 
             return w,x,y,z
         
         else:
-            S = np.sqrt(1 + Vector_Rotation_Matrix[2][2] - Vector_Rotation_Matrix[0][0]- Vector_Rotation_Matrix[1][1])*2
-            w = (Vector_Rotation_Matrix[1][0] - Vector_Rotation_Matrix[0][1]) /S
-            x = (Vector_Rotation_Matrix[0][2] - Vector_Rotation_Matrix[2][0]) /S
-            y = (Vector_Rotation_Matrix[1][2] - Vector_Rotation_Matrix[2][1]) /S
+            S = 2*np.sqrt(1 + Vector_Rotation_Matrix.item(2,2) - Vector_Rotation_Matrix.item(0,0)- Vector_Rotation_Matrix.item(1,1))
+            w = (Vector_Rotation_Matrix.item(1,0) - Vector_Rotation_Matrix.item(0,1)) /S
+            x = (Vector_Rotation_Matrix.item(0,2) - Vector_Rotation_Matrix.item(2,0)) /S
+            y = (Vector_Rotation_Matrix.item(1,2) - Vector_Rotation_Matrix.item(2,1)) /S
             z = 0.25*S
 
             return w,x,y,z
@@ -181,13 +183,13 @@ class Quaternion_Operations:
 
         return [qw, qx, qy, qz]
 
-    def Quaternion_to_Euler(qw, qx, qy, qz):
-    
-        X = m.atan2((2*(qw*qx+qy*qz)), (1-2*(qx*qx+qy*qy)))
-        Y = m.asin(1 if 2 * (qw * qy - qz * qx) > 1 else (-1 if 2 * (qw * qy - qz * qx)<-1 else 2 * (qw * qy - qz * qx)))
-        Z = m.atan2((2*(qw*qz + qx*qy)),(1-2*(qy*qy+qz+qz)))
+    def Quaternion_to_Euler(quaternion):
+        qw,qx,qy,qz = quaternion
+        X = m.atan2((2*(qw*qx+qy*qz)), (1-2*(qx*qx+qy*qy))) *(180/np.pi)
+        Y = m.asin(1 if 2 * (qw * qy - qz * qx) > 1 else (-1 if 2 * (qw * qy - qz * qx)<-1 else 2 * (qw * qy - qz * qx)))*(180/np.pi)
+        Z = m.atan2((2*(qw*qz + qx*qy)),(1-2*(qy*qy+qz*qz)))*(180/np.pi)
 
-        return X, Y, Z
+        return np.round((X, Y, Z), decimals=2) 
 
 
 
@@ -213,11 +215,23 @@ class Plot3D:
 
 v1 = (1,0,0)
 euler = Euler_Angles()
-Rotation_Matrix = euler.Rot_Z(90) * euler.Rot_Y(45) * euler.Rot_Z(90)
-
-print(np.round(Rotation_Matrix, decimals= 2))
+Rotation_Matrix = euler.Rot_X(40) * euler.Rot_Y(45) * euler.Rot_Z(80)
 
 
+print(euler.Eueler(Rotation_Matrix))
+
+
+
+
+
+
+
+# 'Comparitive analysis Conversion with Quaternions and Euler Conversion'
+# print(np.round(Rotation_Matrix, decimals= 2))
+# print(type(Rotation_Matrix))
+# quaternion = Quaternion(Vector_Rotation_matrix = Rotation_Matrix)
+# QueenOfPain = Quaternion_Operations.Quaternion_to_Euler(quaternion.q)
+# print(QueenOfPain)
 
 
 
