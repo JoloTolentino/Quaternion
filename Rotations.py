@@ -11,6 +11,8 @@ import math as m
 import matplotlib.pyplot as plt 
 import sys
 
+
+
 class Vector_Rotation:
     def __init__(self,vector,yaw = None, pitch= None, roll = None):
         if yaw and pitch and roll : 
