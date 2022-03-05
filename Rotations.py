@@ -65,6 +65,9 @@ class Euler_Angles(Vector_Rotation):
                           [ m.sin(roll), m.cos(roll) , 0 ],
                           [ 0         , 0            , 1 ]])
 
+    'One of the complications with  solving the angle of rotations  matrices is that when you dable with 3 different rotational axises it creates alot of coordinate permutation'
+    'The Tate_Bryan Convention only solves ZYX rotation matrixes and is the standard according to a lot of websites that i have read.'
+    
     def Tate_Bryan(self,matrix): #Vector_Rotation about 3 Axis (X,Y,Z) TATE -BRYAN angles 
         tol = sys.float_info.epsilon * 10
         #try this first
@@ -83,6 +86,7 @@ class Euler_Angles(Vector_Rotation):
         
         return np.round((phi*180)/np.pi,decimals=2),np.round((theta*180)/np.pi,decimals=2),np.round((psi*180)/np.pi,decimals=2)
 
+    'Then we have the Euler Convention, '
     def Eueler(self,matrix): # Rotation between 2 Principal Axises (X,Y,X) .... and all the other permutations 
         phi = m.atan2(matrix.item(1,2),matrix.item(0,2))
         sp = m.sin(phi)
@@ -113,7 +117,8 @@ class Quaternion(Vector_Rotation) :
             # self.phi,self.theta, self.psi = self.yaw,self.pitch,self.roll
 
         # assert(vector )
-    
+    'Hahaha Die.'
+    'I am kidding.'
     def RMat2Quat(self,Vector_Rotation_Matrix):
         # print(Vector_Rotation_Matrix[0][0])
         trace = Vector_Rotation_Matrix.item(0,0)+ Vector_Rotation_Matrix.item(1,1)+ Vector_Rotation_Matrix.item(2,2)
@@ -195,7 +200,7 @@ class Quaternion_Operations:
 
 
 
-class Plot3D:
+class PlotVector3D:
     def __init__(self,v1,v2):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
@@ -217,7 +222,10 @@ class Plot3D:
 
 v1 = (1,0,0)
 euler = Euler_Angles()
-Rotation_Matrix = euler.Rot_X(40) * euler.Rot_Y(45) * euler.Rot_Z(80)
+
+## Tate-Bryan Angles  ZYX
+Rotation_Matrix = euler.Rot_Z(40) * euler.Rot_Y(45) * euler.Rot_X(80)
+
 
 
 print(euler.Eueler(Rotation_Matrix))
@@ -229,11 +237,11 @@ print(euler.Eueler(Rotation_Matrix))
 
 
 # 'Comparitive analysis Conversion with Quaternions and Euler Conversion'
-# print(np.round(Rotation_Matrix, decimals= 2))
-# print(type(Rotation_Matrix))
-# quaternion = Quaternion(Vector_Rotation_matrix = Rotation_Matrix)
-# QueenOfPain = Quaternion_Operations.Quaternion_to_Euler(quaternion.q)
-# print(QueenOfPain)
+print(np.round(Rotation_Matrix, decimals= 2))
+print(type(Rotation_Matrix))
+quaternion = Quaternion(Vector_Rotation_matrix = Rotation_Matrix)
+QueenOfPain = Quaternion_Operations.Quaternion_to_Euler(quaternion.q)
+print(QueenOfPain)
 
 
 
